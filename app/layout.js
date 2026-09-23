@@ -1,28 +1,33 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
+import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
 
 export const metadata = {
-  title: "멘토링 예약",
-  description: "멘토-멘티 실시간 예약 플랫폼",
+  title: { default: "멘토링 예약", template: "%s · 멘토링 예약" },
+  description: "지역 특화 프로젝트를 위한 1:1 멘토링 예약",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f7f7f8",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ko" className={inter.variable}>
+      <head>
+        {/* Pretendard covers Korean glyphs; Inter covers Latin and digits. */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body className="min-h-dvh">
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }
