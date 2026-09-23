@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens, taken from the prototype (ICT/mentor-booking-v1-roles.html).
+ * Neutrals are Tailwind's zinc scale and the accent is blue-600, which match
+ * the prototype values exactly, so components use zinc-* / blue-* utilities.
+ * Only the names below are project-specific.
+ */
+@theme {
+  --font-sans: var(--font-inter), "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo",
+    "Malgun Gothic", sans-serif;
+
+  --color-canvas: #f7f7f8; /* page background */
+  --color-ink: #18181b; /* primary buttons, "my booking" cells */
+  --color-ink-hover: #3f3f46;
+
+  /* Region tones on the admin board and chips. Paired with a text label everywhere. */
+  --color-region-dn: #15803d; /* 동남권 */
+  --color-region-dn-soft: #dcfce7;
+  --color-region-cc: #1d4ed8; /* 충청권 */
+  --color-region-cc-soft: #eff6ff;
+
+  --shadow-card: 0 1px 2px rgb(24 24 27 / 0.04), 0 8px 24px rgb(24 24 27 / 0.06);
+  --shadow-tray: 0 -8px 24px rgb(24 24 27 / 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-canvas text-zinc-900 antialiased;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+  /* Visible keyboard focus everywhere; mouse clicks do not show it. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Diagonal hatch for "outside this mentor's session period" cells. */
+@utility hatch {
+  background: repeating-linear-gradient(45deg, #fafafa, #fafafa 4px, #f4f4f5 4px, #f4f4f5 8px);
+}
+
+/* Room for the iPhone home indicator under fixed bottom bars. */
+@utility pb-safe {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
