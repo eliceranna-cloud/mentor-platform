@@ -10,7 +10,7 @@ Everyone signs in on the same page (`/login`). The account decides the destinati
 
 | Role | How the account is created | Lands on | Can do |
 | --- | --- | --- | --- |
-| Student | Signs up with an email that is on the LXP roster, then enters the one-time code sent by email | `/student` | Book slots with mentors in their own region, see the live classroom link after booking, move or cancel future bookings, see the recorded outcome of past sessions |
+| Student | Signs up with an email that is on the LXP roster, then enters the one-time code sent by email on `/signup/verify` (opened automatically after sign-up, and linked from the code email, the sign-up page and the login page) | `/student` | Book slots with mentors in their own region, see the live classroom link after booking, move or cancel future bookings, see the recorded outcome of past sessions |
 | Mentor | An admin fills in the mentor's email and sends an invitation; the mentor sets a password | `/mentor` | See their schedule (calendar or list), each student's name, phone and area, their own classroom link, and record each session as 완료 / 취소 / 일정 변경 once it has started |
 | Admin | Invited by another admin; the owner row is created during setup | `/admin` | Booking board with names, move / cancel / assign bookings (rules can be overridden after a warning), roster, mentor details and invitations, team members, session outcomes |
 

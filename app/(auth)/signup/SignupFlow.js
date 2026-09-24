@@ -1,37 +1,34 @@
 "use client";
 
-import { CircleCheck, MailCheck } from "lucide-react";
+import { CircleCheck } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Alert } from "@/components/ui/Alert";
-import { Button, TextButton } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { CheckboxCard, Field, Input, PasswordChecklist, PasswordInput } from "@/components/ui/Field";
-import { useToast } from "@/components/ui/Toast";
+import { rememberPendingSignupEmail } from "@/lib/auth/pendingSignup";
 import { useFormFields } from "@/lib/hooks/useFormFields";
 import { useServerAction } from "@/lib/hooks/useServerAction";
 import { isValidEmail, normalizeEmail, PASSWORD_RULE_TEXT, PASSWORD_RULES, signupErrors } from "@/lib/validation";
-import { checkSignupEmail, resendSignupCode, signUpStudent, verifySignupCode } from "../actions";
+import { checkSignupEmail, signUpStudent } from "../actions";
 
 const EMPTY = { email: "", phone: "", password: "", passwordConfirm: "", consent: false };
 
 /**
- * Two steps on one page: details -> one-time code sent by email (its length is a Supabase setting, currently 8 digits).
- * Name, region and local area come from the roster, so the student only types
- * what the roster does not have.
+ * Sign-up step 1: details. Name, region and local area come from the roster,
+ * so the student only types what the roster does not have. On success the
+ * code is emailed and the student continues on /signup/verify (step 2), which
+ * is also reachable later from the email itself.
  */
-export function SignupFlow({ verifyEmail }) {
-  const [pendingEmail, setPendingEmail] = useState(verifyEmail);
-  const [greetingName, setGreetingName] = useState(null);
-
-  if (pendingEmail) {
-    return <VerifyStep email={pendingEmail} name={greetingName} onChangeEmail={() => setPendingEmail(null)} />;
-  }
+export function SignupFlow() {
+  const router = useRouter();
   return (
     <DetailsStep
       onSent={(result) => {
-        setGreetingName(result.name);
-        setPendingEmail(result.email);
+        rememberPendingSignupEmail(result.email);
+        router.push("/signup/verify");
       }}
     />
   );
@@ -187,65 +184,12 @@ function DetailsStep({ onSent }) {
           {!canSubmit && <p className="text-center text-[13px] text-zinc-500">필수 항목(*)을 모두 올바르게 입력하고 동의하면 인증 코드를 받을 수 있어요.</p>}
         </div>
       </form>
-    </AuthShell>
-  );
-}
-
-function VerifyStep({ email, name, onChangeEmail }) {
-  const router = useRouter();
-  const toast = useToast();
-  const [code, setCode] = useState("");
-  const verify = useServerAction(verifySignupCode);
-  const resend = useServerAction(resendSignupCode);
-
-  return (
-    <AuthShell
-      title="이메일 인증"
-      lead={`${name ? `${name}님, ` : ""}${email} 으로 인증 코드를 보냈어요. 메일이 안 보이면 스팸함도 확인해주세요.`}
-    >
-      <form
-        className="flex flex-col gap-4"
-        noValidate
-        onSubmit={(event) => {
-          event.preventDefault();
-          verify.run({ email, code }, (result) => {
-            router.replace(result.redirectTo);
-            router.refresh();
-          });
-        }}
-      >
-        <Field label="인증 코드" required>
-          {(id, aria) => (
-            <Input
-              id={id}
-              {...aria}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={10}
-              placeholder="12345678"
-              className="tnum text-center text-xl tracking-[0.4em]"
-              value={code}
-              onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
-            />
-          )}
-        </Field>
-
-        {(verify.error || resend.error) && <Alert tone="error">{verify.error || resend.error}</Alert>}
-
-        <Button type="submit" size="lg" block loading={verify.pending}>
-          <MailCheck className="size-4" aria-hidden />
-          인증하고 시작하기
-        </Button>
-      </form>
-
-      <div className="mt-6 flex flex-wrap justify-between gap-2">
-        <TextButton muted onClick={onChangeEmail}>
-          정보 다시 입력하기
-        </TextButton>
-        <TextButton disabled={resend.pending} onClick={() => resend.run({ email }, () => toast("인증 코드를 다시 보냈어요"))}>
-          코드 다시 받기
-        </TextButton>
-      </div>
+      <p className="mt-6 text-center text-sm text-zinc-600">
+        <span>인증 코드를 이미 받았나요? </span>
+        <Link href="/signup/verify" className="font-semibold text-blue-600 hover:underline">
+          코드 입력하기
+        </Link>
+      </p>
     </AuthShell>
   );
 }

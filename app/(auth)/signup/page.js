@@ -1,10 +1,11 @@
+import { redirect } from "next/navigation";
 import { SignupFlow } from "./SignupFlow";
 
 export const metadata = { title: "학생 회원가입" };
 
-// ?verify=<email> jumps straight to the code step (used from the login page
-// when an account exists but the email was never confirmed).
+// Older links used /signup?verify=<email> for the code step; it now has its own page.
 export default async function SignupPage({ searchParams }) {
   const { verify } = await searchParams;
-  return <SignupFlow verifyEmail={typeof verify === "string" ? verify : null} />;
+  if (verify) redirect("/signup/verify");
+  return <SignupFlow />;
 }

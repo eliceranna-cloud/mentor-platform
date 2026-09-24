@@ -32,14 +32,15 @@ describe("evaluateEmailQuota", () => {
 
 describe("email templates", () => {
   it("puts the sign-up code in both HTML and plain text", () => {
-    const mail = signupCodeEmail("482913");
+    const mail = signupCodeEmail("482913", "https://x.test/signup/verify");
     expect(mail.subject).toContain("인증 코드");
     expect(mail.html).toContain("482913");
     expect(mail.text).toContain("482913");
   });
 
   it("puts the code in the subject and embeds the logo instead of linking to it", () => {
-    const mail = signupCodeEmail("20169236");
+    const mail = signupCodeEmail("20169236", "https://x.test/signup/verify");
+    expect(mail.html).toContain('href="https://x.test/signup/verify"');
     expect(mail.subject).toContain("20169236");
     expect(mail.html).toContain('src="cid:elice-logo"');
     expect(mail.attachments[0]).toMatchObject({ cid: "elice-logo", encoding: "base64" });

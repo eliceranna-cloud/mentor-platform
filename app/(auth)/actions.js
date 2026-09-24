@@ -6,6 +6,7 @@ import { ROLE_HOME, signedInFromEmailLink } from "@/lib/auth/session";
 import { assertCanSendEmail, sendEmail } from "@/lib/email/send";
 import { passwordResetEmail, signupCodeEmail } from "@/lib/email/templates";
 import { authErrorMessage } from "@/lib/errors";
+import { getSiteUrl } from "@/lib/site-url";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
@@ -45,7 +46,8 @@ async function homeFor(supabase) {
 }
 
 async function emailSignupCode(email, code) {
-  await sendEmail({ to: email, kind: "signup_code", ...signupCodeEmail(code) });
+  const verifyUrl = `${await getSiteUrl()}/signup/verify`;
+  await sendEmail({ to: email, kind: "signup_code", ...signupCodeEmail(code, verifyUrl) });
 }
 
 /**

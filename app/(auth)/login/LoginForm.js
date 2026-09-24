@@ -7,6 +7,7 @@ import { AuthShell } from "@/components/layout/AuthShell";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, PasswordInput } from "@/components/ui/Field";
+import { rememberPendingSignupEmail } from "@/lib/auth/pendingSignup";
 import { useServerAction } from "@/lib/hooks/useServerAction";
 import { isValidEmail } from "@/lib/validation";
 import { signIn } from "../actions";
@@ -84,7 +85,7 @@ export function LoginForm({ linkError }) {
           <Alert tone="error">
             <span>{error}</span>
             {needsVerification && (
-              <Link href={`/signup?verify=${encodeURIComponent(values.email)}`} className="ml-1 font-semibold underline">
+              <Link href="/signup/verify" onClick={() => rememberPendingSignupEmail(values.email)} className="ml-1 font-semibold underline">
                 인증 코드 입력하기
               </Link>
             )}
